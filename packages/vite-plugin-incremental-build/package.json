@@ -1,0 +1,39 @@
+{
+  "name": "vite-incra",
+  "version": "0.1.0",
+  "description": "Correct incremental build for Vite: content hashing, dependency graph, parent invalidation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "register.mjs",
+    "rollup-loader-internal.mjs"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0 || ^7.0.0",
+    "rollup": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "~5.9.0",
+    "vite": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "vite-incra": "./bin/run.mjs"
+  }
+}
