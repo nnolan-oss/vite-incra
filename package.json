@@ -1,0 +1,42 @@
+{
+  "name": "vite-incra",
+  "version": "2.0.0",
+  "description": "Correct incremental build for Vite: content hashing, dependency graph, parent invalidation",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
+  "bin": {
+    "vite-incremental": "lib/bin/vite-incremental.js"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "rimraf lib && tsc && chmod +x lib/bin/vite-incremental.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nnolan-oss/vite-incra.git"
+  },
+  "keywords": [
+    "vite",
+    "incremental",
+    "build"
+  ],
+  "author": "github/3nln",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/nnolan-oss/vite-incra/issues"
+  },
+  "homepage": "https://github.com/nnolan-oss/vite-incra#readme",
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "fast-glob": "^3.3.3",
+    "vite": "^7.2.4"
+  }
+}
