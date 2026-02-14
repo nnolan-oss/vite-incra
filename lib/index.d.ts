@@ -12,7 +12,7 @@ export interface IncrementalBuildPluginOptions {
 }
 /** Vite plugin for incremental builds. Add to plugins in vite.config.ts */
 export declare function incrementalBuild(options?: IncrementalBuildPluginOptions): Plugin;
-/** Run incremental build (watcher + build loop). Use via `vite-incremental` CLI or call directly. */
+/** Run incremental build (watcher + build loop). Use via `vite-incra` CLI or call directly. */
 export declare function runIncrementalBuild(config?: vite.ResolvedConfig | vite.UserConfig, options?: IncrementalBuildPluginOptions): Promise<void>;
 /** Patch config with incremental build prerequisites. Used internally by the plugin. */
 export declare const patchConfig: (config: vite.UserConfig, { ignoreWarnings }?: {

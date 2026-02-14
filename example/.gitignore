@@ -1,4 +1,4 @@
 node_modules
 dist
-.vite-incremental-cache.json
+.vite-incra-cache.json
 *.local

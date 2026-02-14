@@ -39,7 +39,7 @@ let buildFn: () => void
 
 const toDist = (...parts: string[]) => path.join(outDir, ...parts)
 
-const CACHE_NAME = '.vite-incremental-cache.json'
+const CACHE_NAME = '.vite-incra-cache.json'
 const ENV_MODIFIED_FILE = 'VITE_PLUGIN_INCREMENTAL_MODIFIED_FILE'
 const SOURCE_GLOB =
 	'**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,vue,svelte,css,scss,sass,less,styl,stylus,html}'
@@ -194,7 +194,7 @@ export function incrementalBuild(options: IncrementalBuildPluginOptions = {}): P
 	}
 }
 
-/** Run incremental build (watcher + build loop). Use via `vite-incremental` CLI or call directly. */
+/** Run incremental build (watcher + build loop). Use via `vite-incra` CLI or call directly. */
 export async function runIncrementalBuild(
 	config?: vite.ResolvedConfig | vite.UserConfig,
 	options?: IncrementalBuildPluginOptions

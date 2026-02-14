@@ -10,6 +10,6 @@
 		"esModuleInterop": true,
 		"moduleResolution": "bundler"
 	},
-	"include": ["./**/*.ts"],
+	"include": ["./**/*.ts", "lib/index.js"],
 	"exclude": ["node_modules/**/*", "example/",  "lib/*"]
 }

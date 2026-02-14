@@ -6,13 +6,13 @@
   "types": "lib/index.d.ts",
   "type": "module",
   "bin": {
-    "vite-incremental": "lib/bin/vite-incremental.js"
+    "vite-incra": "lib/bin/vite-incra.js"
   },
   "files": [
     "lib"
   ],
   "scripts": {
-    "build": "rimraf lib && tsc && chmod +x lib/bin/vite-incremental.js"
+    "build": "rimraf lib && tsc && chmod +x lib/bin/vite-incra.js"
   },
   "repository": {
     "type": "git",

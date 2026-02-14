@@ -7,6 +7,6 @@ import { incrementalBuild } from 'vite-incra'
 export default defineConfig({
   root: '.',
   plugins: [react(), incrementalBuild({
-    watch: false
+    watch: true
   }) as PluginOption],
 })
