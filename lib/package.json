@@ -1,6 +1,6 @@
 {
   "name": "vite-incra",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Correct incremental build for Vite: content hashing, dependency graph, parent invalidation",
   "type": "module",
   "main": "./dist/index.js",
