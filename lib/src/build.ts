@@ -106,60 +106,14 @@ export async function incrementalBuild(
   ];
   const useCache = !fullRebuildReasons.includes(result.reason);
 
-  // Invalidate dirty set + deps. When an ENTRY (e.g. index.html) is dirty, we must
-  // expand transitively from it — otherwise CSS/assets stay cached and won't emit.
-  const cacheInvalidation = useCache
-    ? expandForCacheInvalidation(result.invalidatedModules, manifest)
-    : new Set<string>();
+  // Invalidate only the dirty set. Dependencies of dirty modules are unchanged and
+  // stay in cache — Rollup will use them when re-parsing the dirty modules.
+  const cacheInvalidation = useCache ? result.invalidatedModules : new Set<string>();
 
   return runBuild(resolved, incCacheDir, {
     useCache,
     invalidatedModules: cacheInvalidation,
   });
-}
-
-/** Max depth when expanding from dirty entry. 3 = index.html→main→App→App.css. */
-const ENTRY_EXPAND_MAX_DEPTH = 3;
-
-/**
- * Expand invalidated set for cache filtering.
- * - Normal modules: dirty set + direct deps (1 level).
- * - When an ENTRY is dirty: expand up to ENTRY_EXPAND_MAX_DEPTH levels so
- *   CSS/assets are re-processed without full 39-module rebuild.
- */
-function expandForCacheInvalidation(
-  dirtySet: ReadonlySet<string>,
-  manifest: BuildManifest
-): Set<string> {
-  const out = new Set(dirtySet);
-  const entryIds = new Set(manifest.entries);
-
-  const hasDirtyEntry = [...dirtySet].some((id) => entryIds.has(id));
-  if (hasDirtyEntry) {
-    for (const id of dirtySet) {
-      if (!entryIds.has(id)) continue;
-      let layer = [...(manifest.modules.get(id)?.dependencies ?? [])];
-      for (let depth = 0; depth < ENTRY_EXPAND_MAX_DEPTH && layer.length > 0; depth++) {
-        const next: string[] = [];
-        for (const depId of layer) {
-          out.add(depId);
-          const record = manifest.modules.get(depId);
-          if (record?.dependencies) {
-            for (const d of record.dependencies) next.push(d);
-          }
-        }
-        layer = next;
-      }
-    }
-  } else {
-    for (const id of dirtySet) {
-      const record = manifest.modules.get(id);
-      if (record?.dependencies) {
-        for (const depId of record.dependencies) out.add(depId);
-      }
-    }
-  }
-  return out;
 }
 
 /**
@@ -189,16 +143,17 @@ function createHashResolver(
 ) {
   return async (moduleId: string): Promise<string | null> => {
     const previousHash = manifest?.modules.get(moduleId)?.contentHash;
-    if (moduleId.startsWith("\0")) return previousHash ?? null;
-
     const filePath = resolveModuleFilePath(moduleId, publicDir);
-    if (!filePath) return null;
+    // Virtual/unresolvable modules: use previous hash (no disk to read)
+    if (!filePath) return previousHash ?? null;
 
     try {
       const content = await fs.readFile(filePath, "utf-8");
       return engine.hashContent(content);
     } catch {
-      return null;
+      // Read failed (missing, permissions): use previous hash to avoid false
+      // "changed" for virtual modules that slipped through (e.g. __vite-browser-external)
+      return previousHash ?? null;
     }
   };
 }

@@ -18,20 +18,42 @@ export function isRootRelativeModuleId(moduleId: string): boolean {
 }
 
 /**
+ * Returns true if the module ID is virtual/generated (cannot be read from disk).
+ */
+export function isVirtualModuleId(moduleId: string): boolean {
+  return (
+    moduleId.startsWith("\0") ||
+    moduleId.startsWith("__vite") ||
+    moduleId.startsWith("node:")
+  );
+}
+
+/**
+ * Strip query string and hash fragment from module ID for file resolution.
+ * Vite/Rollup append these (e.g. file.css?used, file.css?direct) — the actual
+ * file on disk has no query, so we must strip it to read content.
+ */
+export function stripModuleIdQuery(moduleId: string): string {
+  return moduleId.split("?")[0].split("#")[0];
+}
+
+/**
  * Resolve module ID to file path on disk.
- * - Virtual (\0...): returns empty (cannot read)
+ * - Virtual (\0..., __vite*, node:): returns null (cannot read)
  * - Root-relative (/x): publicDir + slice
+ * - Query strings (?used, ?direct) stripped so we can read the real file
  * - Else: use as-is
  */
 export function resolveModuleFilePath(
   moduleId: string,
   publicDir: string
 ): string | null {
-  if (moduleId.startsWith("\0")) return null;
-  if (isRootRelativeModuleId(moduleId)) {
-    return path.join(publicDir, moduleId.slice(1));
+  if (isVirtualModuleId(moduleId)) return null;
+  const cleanId = stripModuleIdQuery(moduleId);
+  if (isRootRelativeModuleId(cleanId)) {
+    return path.join(publicDir, cleanId.slice(1));
   }
-  return moduleId;
+  return cleanId;
 }
 
 /**
@@ -45,7 +67,7 @@ export function moduleIdsToRelativePaths(
 ): string[] {
   const result: string[] = [];
   for (const id of moduleIds) {
-    if (id.startsWith("\0") || id === "invalid") continue;
+    if (isVirtualModuleId(id) || id === "invalid") continue;
     const p = isRootRelativeModuleId(id) && publicDir
       ? path.join(publicDir, id.slice(1))
       : id;

@@ -26,7 +26,10 @@ export async function runBuild(
   let rollupCache =
     useCache && incCacheDir ? await loadRollupCache(incCacheDir) : null;
 
-  const cache = rollupCache as { modules?: Array<{ id?: string }> } | null;
+  const cache = rollupCache as {
+    modules?: Array<{ id?: string }>;
+    plugins?: unknown;
+  } | null;
 
   // Remove invalidated modules so Rollup re-transforms them.
   // We pass expanded set (incl. transitive deps) so CSS/assets are re-processed.
@@ -41,7 +44,8 @@ export async function runBuild(
       modules: cache.modules.filter(
         (m) => m?.id && !invalidatedModules!.has(m.id),
       ),
-      plugins: undefined,
+      // Preserve plugins cache so Rollup doesn't re-run plugin transforms on cached modules
+      plugins: (cache as { plugins?: unknown }).plugins,
     };
   }
 
