@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"lib": ["esnext", "dom"],
 		"outDir": "lib",
+		"rootDir": "src",
 		"target": "esnext",
 		"strict": true,
 		"noImplicitAny": true,
@@ -10,6 +11,6 @@
 		"esModuleInterop": true,
 		"moduleResolution": "bundler"
 	},
-	"include": ["./**/*.ts", "lib/index.js"],
-	"exclude": ["node_modules/**/*", "example/",  "lib/*"]
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules/**/*", "example/**/*"]
 }
