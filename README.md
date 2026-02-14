@@ -9,7 +9,7 @@ Projects that need to be built to disk instead of being served by the Vite dev s
 ## Installation
 
 ```bash
-npm i -D vite-incra
+npm i -D vite-incra tsx
 ```
 
 ## Usage
