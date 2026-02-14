@@ -5,14 +5,23 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    }
+  },
   "bin": {
     "vite-incra": "lib/bin/vite-incra.js"
   },
   "files": [
-    "lib"
+    "lib",
+    "README.md"
   ],
   "scripts": {
-    "build": "rimraf lib && tsc && chmod +x lib/bin/vite-incra.js"
+    "build": "rimraf lib && tsc && chmod +x lib/bin/vite-incra.js",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -25,6 +34,9 @@
   ],
   "author": "github/3nln",
   "license": "GPL-3.0",
+  "engines": {
+    "node": ">=18"
+  },
   "bugs": {
     "url": "https://github.com/nnolan-oss/vite-incra/issues"
   },
