@@ -21,22 +21,24 @@ import { defineConfig } from 'vite'
 import { incrementalBuild } from 'vite-incra'
 
 export default defineConfig({
-  plugins: [
-    // ... your other plugins (react, vue, etc.)
-    incrementalBuild({
-      bundleName: 'bundle',
-      watcherIgnoredFiles: [/node_modules/, /\.git/, /dist/],
-      beforeBuildCallback: () => { /* runs before each build */ },
-      cleanBeforeFirstBuild: true,
-      watch: true,
-      watcherUsePolling: true,
-    }),
-  ],
-  root: '.',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-  },
+	plugins: [
+		// ... your other plugins (react, vue, etc.)
+		incrementalBuild({
+			bundleName: 'bundle',
+			watcherIgnoredFiles: [/node_modules/, /\.git/, /dist/],
+			beforeBuildCallback: () => {
+				/* runs before each build */
+			},
+			cleanBeforeFirstBuild: true,
+			watch: true,
+			watcherUsePolling: true,
+		}),
+	],
+	root: '.',
+	build: {
+		outDir: 'dist',
+		emptyOutDir: true,
+	},
 })
 ```
 
@@ -44,10 +46,10 @@ export default defineConfig({
 
 ```json
 {
-  "scripts": {
-    "build": "vite build",
-    "build:incremental": "vite-incra"
-  }
+	"scripts": {
+		"build": "vite build",
+		"build:incremental": "vite-incra"
+	}
 }
 ```
 
@@ -95,10 +97,12 @@ import { runIncrementalBuild, patchConfig } from 'vite-incra'
 import viteConfig from '../vite.config'
 
 runIncrementalBuild(patchConfig(viteConfig), {
-  watch: false,
-  bundleName: 'bundle',
-  watcherIgnoredFiles: [/node_modules/, /\.git/],
-  beforeBuildCallback: () => { /* ... */ },
+	watch: false,
+	bundleName: 'bundle',
+	watcherIgnoredFiles: [/node_modules/, /\.git/],
+	beforeBuildCallback: () => {
+		/* ... */
+	},
 })
 ```
 
@@ -112,7 +116,11 @@ npm i -D vite-incra tsx
 
 - **Extensions**: Don't use this package. Build minimal files for install, serve JS from Vite dev server, allow localhost in CSP.
 - **File remapping**: Use Vite middleware for build path remapping.
-- **Tested**: Vue, React. Rolldown untested.
+- **Tested**: React (TypeScript + JavaScript).
 - **Build speed**: Depends on how many files the changed file imports. More imports = longer incremental build.
+
+## Acknowledgments
+
+Inspired by [momentumdash/vite-plugin-incremental-build](https://github.com/momentumdash/vite-plugin-incremental-build).
 
 ---

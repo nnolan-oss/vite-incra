@@ -19,7 +19,7 @@ type DictionaryEntry = {
 let dictionary: Record<string, DictionaryEntry> = {}
 let originalEntries: Record<string, string>
 
-// Framework files that emit extracted CSS (Vue SFC, Svelte)
+// Framework files that emit extracted CSS (Vue SFC, Svelte). React uses CSS imports → findCssImporters.
 const COMPONENT_WITH_STYLES = /\.(vue|svelte)$/
 // Extensions that need .js output in entryFileNames
 const SOURCE_EXT_TO_JS: Record<string, string> = {
@@ -41,6 +41,7 @@ const toDist = (...parts: string[]) => path.join(outDir, ...parts)
 
 const CACHE_NAME = '.vite-incra-cache.json'
 const ENV_MODIFIED_FILE = 'VITE_PLUGIN_INCREMENTAL_MODIFIED_FILE'
+// React/TS/JS, Vue, Svelte + styles + HTML
 const SOURCE_GLOB =
 	'**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,vue,svelte,css,scss,sass,less,styl,stylus,html}'
 // Only these extensions work as Rollup entry for partial build; CSS cannot be sole entry
@@ -48,7 +49,7 @@ const PARTIAL_BUILD_EXT = /\.(tsx?|jsx?|mts|cts|mjs|cjs|vue|svelte)$/
 // Config files import Node/bundler deps – cannot be used as browser entry. Force full build.
 const CONFIG_FILE =
 	/(?:^|\/)(?:vite|vitest|rollup|vike)\.(config|env)\.(ts|js|mts|mjs|cjs|cts)$/
-// Stylesheet extensions: when changed, use the importing module as entry for partial build
+// Stylesheet extensions (incl. *.module.css for React): use importing module as entry for partial build
 const CSS_EXT = /\.(css|scss|sass|less|styl|stylus)$/
 
 type CacheData = { version: number; root: string; files: Record<string, number> }
@@ -109,12 +110,12 @@ function getChangedFiles(cache: CacheData | null, current: Record<string, number
 	return changed
 }
 
-/** Find JS/TS modules that import the given stylesheet. Used to resolve CSS → importer for partial build. */
+/** Find React/TS/JS modules that import the given stylesheet. Used to resolve CSS → importer for partial build. */
 function findCssImporters(cssPath: string, rootResolved: string): string[] {
 	const importers: string[] = []
 	const IMPORT_RE =
 		/(?:import\s+['"]([^'"]+)['"]|import\s+[^'"]+from\s+['"]([^'"]+)['"]|require\s*\(\s*['"]([^'"]+)['"]\s*\))/g
-	const sourceFiles = fg.sync('**/*.{ts,tsx,js,jsx,vue,svelte}', {
+	const sourceFiles = fg.sync('**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,vue,svelte}', {
 		cwd: rootResolved,
 		absolute: true,
 		ignore: ['**/node_modules/**', '**/dist/**'],
@@ -127,8 +128,9 @@ function findCssImporters(cssPath: string, rootResolved: string): string[] {
 			IMPORT_RE.lastIndex = 0
 			let m: RegExpExecArray | null
 			while ((m = IMPORT_RE.exec(code)) !== null) {
-				const spec = (m[1] ?? m[2] ?? m[3] ?? '').trim()
-				if (!spec || !spec.endsWith('.css') && !/\.(scss|sass|less|styl|stylus)$/.test(spec))
+				const spec = (m[1] ?? m[2] ?? m[3] ?? '').trim().split('?')[0]
+				// Match .css, .module.css, .scss, .module.scss, etc.
+				if (!spec || !/(\.module)?\.(css|scss|sass|less|styl|stylus)(\?.*)?$/i.test(spec))
 					continue
 				const fromDir = path.dirname(absPath)
 				const resolved = path.resolve(fromDir, spec)
