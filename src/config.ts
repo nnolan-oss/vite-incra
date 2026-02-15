@@ -43,14 +43,27 @@ export const patchConfig = (config: UserConfig, { ignoreWarnings = false } = {})
 
 	config.build.emptyOutDir = false
 	config.build.rollupOptions.preserveEntrySignatures = 'strict'
+
+	const existingOutput = config.build.rollupOptions.output
+	const existingOutputObj =
+		typeof existingOutput === 'object' && existingOutput !== null && !Array.isArray(existingOutput)
+			? (existingOutput as Record<string, unknown>)
+			: {}
+
+	const normalizePath = (p: string) => p.replace(/\\/g, '/')
 	config.build.rollupOptions.output = {
-		entryFileNames: ({ facadeModuleId, name }) => {
-			if (`${facadeModuleId}`.includes('/node_modules/'))
-				return `node_modules/${name.split('node_modules/').at(-1)}.js`
+		...existingOutputObj,
+		entryFileNames: ({ facadeModuleId, name }: { facadeModuleId?: string | null; name: string }) => {
+			if (facadeModuleId && `${facadeModuleId}`.includes('/node_modules/'))
+				return normalizePath(`node_modules/${name.split('node_modules/').at(-1)}.js`)
 			for (const [ext, outExt] of Object.entries(SOURCE_EXT_TO_JS)) {
-				if (name.endsWith(ext)) return name.slice(0, -ext.length) + outExt
+				if (name.endsWith(ext)) return normalizePath(name.slice(0, -ext.length) + outExt)
 			}
-			return '[name].js'
+			return normalizePath(name + '.js')
+		},
+		chunkFileNames: (info: { name?: string }) => {
+			const name = (info.name ?? 'chunk').replace(/\\/g, '/')
+			return `assets/${name}-[hash].js`
 		},
 		preserveModules: true,
 		preserveModulesRoot: config.root.startsWith('./')

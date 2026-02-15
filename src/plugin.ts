@@ -24,5 +24,18 @@ export function incrementalBuild(options: IncrementalBuildPluginOptions = {}): P
 				}
 			}
 		},
+		configurePreviewServer(server) {
+			const validateUri = (req: { url?: string }, res: { statusCode: number; end: (b?: string) => void }, next: () => void) => {
+				try {
+					if (req.url) decodeURIComponent(req.url)
+					next()
+				} catch {
+					res.statusCode = 400
+					res.end('Bad Request: Invalid URL encoding')
+				}
+			}
+			const mw = server.middlewares as { stack: Array<{ route: string; handle: (a: unknown, b: unknown, c: () => void) => void }> }
+			mw.stack.unshift({ route: '', handle: validateUri as (a: unknown, b: unknown, c: () => void) => void })
+		},
 	}
 }
