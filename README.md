@@ -67,6 +67,7 @@ npx vite-incra
 
 - **Watch mode** (default): Watches `src/`, `public/`, `index.html` and rebuilds only when files change.
 - **Single run**: Pass `watch: false` to the plugin if you run from CI and want one build then exit.
+- **Force build**: With `watch: false`, use `vite-incra --force` to build even when no changes are detected.
 
 ## Project structure
 
@@ -98,6 +99,7 @@ import viteConfig from '../vite.config'
 
 runIncrementalBuild(patchConfig(viteConfig), {
 	watch: false,
+	force: true,  // build even when no changes detected
 	bundleName: 'bundle',
 	watcherIgnoredFiles: [/node_modules/, /\.git/],
 	beforeBuildCallback: () => {

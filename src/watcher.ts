@@ -19,6 +19,7 @@ export function startIncrementalBuild({
 	beforeBuildCallback,
 	watch = true,
 	cachePath,
+	force = false,
 }: {
 	config: UserConfig
 	bundleName?: string
@@ -27,6 +28,7 @@ export function startIncrementalBuild({
 	beforeBuildCallback?: () => void
 	watch?: boolean
 	cachePath?: string
+	force?: boolean
 }) {
 	// Config should already be patched when loaded via resolveConfig (plugin's config hook runs)
 	// If called with raw config, patch it
@@ -118,11 +120,15 @@ export function startIncrementalBuild({
 		const cache = cachePath ? loadCache(cachePath) : null
 		const current = getSourceFileMtimes(rootResolved)
 		const changed = getChangedFiles(cache, current)
-		const shouldBuild = !cache || changed.length > 0
+		const shouldBuild = force || !cache || changed.length > 0
 
 		if (!shouldBuild) {
 			console.log('\x1b[90m%s\x1b[0m', 'No changes detected, skipping build')
 			return
+		}
+
+		if (force && cache && changed.length === 0) {
+			console.log('\x1b[90m%s\x1b[0m', 'Forcing full build (--force)')
 		}
 
 		state.watcherModifiedFile =

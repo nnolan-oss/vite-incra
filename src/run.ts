@@ -18,7 +18,7 @@ export async function runIncrementalBuild(
 			: (await vite.resolveConfig({}, 'build', 'production', 'production')) as unknown as UserConfig
 
 	// Options must be read AFTER resolveConfig - plugin sets storedPluginOptions when config loads
-	const opts = options ?? state.storedPluginOptions
+	const opts = { ...(state.storedPluginOptions ?? {}), ...(options ?? {}) }
 	const watchMode = opts.watch !== false
 	const cachePath = getCachePath(resolvedConfig)
 	const hasCache = loadCache(cachePath) !== null
@@ -46,5 +46,6 @@ export async function runIncrementalBuild(
 		beforeBuildCallback: opts.beforeBuildCallback,
 		watch: watchMode,
 		cachePath,
+		force: opts.force ?? false,
 	})
 }

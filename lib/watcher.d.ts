@@ -1,5 +1,5 @@
 import type { UserConfig } from 'vite';
-export declare function startIncrementalBuild({ config, bundleName, watcherIgnoredFiles, watcherUsePolling, beforeBuildCallback, watch, cachePath, }: {
+export declare function startIncrementalBuild({ config, bundleName, watcherIgnoredFiles, watcherUsePolling, beforeBuildCallback, watch, cachePath, force, }: {
     config: UserConfig;
     bundleName?: string;
     watcherIgnoredFiles?: (string | RegExp)[];
@@ -7,4 +7,5 @@ export declare function startIncrementalBuild({ config, bundleName, watcherIgnor
     beforeBuildCallback?: () => void;
     watch?: boolean;
     cachePath?: string;
+    force?: boolean;
 }): void;
