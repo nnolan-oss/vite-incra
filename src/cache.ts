@@ -35,7 +35,7 @@ export function getSourceFileMtimes(rootResolved: string): Record<string, number
 	const matches = fg.sync(SOURCE_GLOB, {
 		cwd: rootResolved,
 		absolute: true,
-		ignore: ['**/node_modules/**', '**/dist/**', '**/.*', '**/.*/**'],
+		ignore: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.*', '**/.*/**'],
 	})
 	for (const file of matches) {
 		try {

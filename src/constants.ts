@@ -29,5 +29,9 @@ export const PARTIAL_BUILD_EXT = /\.(tsx?|jsx?|mts|cts|mjs|cjs|vue|svelte)$/
 export const CONFIG_FILE =
 	/(?:^|\/)(?:vite|vitest|rollup|vike)\.(config|env)\.(ts|js|mts|mjs|cjs|cts)$/
 
+// Root-level files: partial build from these fails (resolve differs from index.html entry).
+// Use full build for common.css→App.tsx etc. Leaf components still get partial build.
+export const FULL_BUILD_ENTRIES = /^(?:src\/)?(?:App|main|index)\.(tsx?|jsx?)$/
+
 // Stylesheet extensions (incl. *.module.css for React): use importing module as entry for partial build
 export const CSS_EXT = /\.(css|scss|sass|less|styl|stylus)$/
